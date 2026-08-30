@@ -7,6 +7,14 @@ DTOs shared between [RustArchon.Panel](https://github.com/RustArchon/RustArchon.
 Part of the [RustArchon](https://github.com/RustArchon/RustArchon) system - see that repo for the
 full architecture and how to run the whole stack locally or via Docker Compose.
 
+## Key files
+
+- `DTOs/RustServerDto.cs` - the server registration/read model (never includes the RCON password -
+  see `RustArchon.Api`'s `RconCredentialProtector`).
+- `DTOs/InvitationCodeDto.cs`, `InvitationRedemptionDtos.cs` - the invitation-gated sign-up contracts
+  between Panel and Api.
+- `DTOs/SendEmailRequestDto.cs` - the request shape for Api's internal `/internal/email` endpoint.
+
 ## License
 
 AGPL-3.0-or-later - see [`LICENSE`](LICENSE). This project also depends on
