@@ -8,6 +8,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\JumpStart\JumpStart\JumpStart.csproj" />
+    <!-- For RconConnectionStatus, reused directly on RustServerDto rather than duplicating the enum -
+         RustArchon.Messaging has zero dependencies of its own, so this can't create a cycle. -->
+    <ProjectReference Include="..\RustArchon.Messaging\RustArchon.Messaging.csproj" />
   </ItemGroup>
 
 </Project>
