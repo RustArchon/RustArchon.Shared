@@ -3,13 +3,15 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using JumpStart.Api.DTOs;
+using RustArchon.Messaging.Contracts;
 
 namespace RustArchon.Shared.DTOs;
 
 /// <summary>
 /// DTO for reading a registered Rust server. Deliberately excludes the RCON password - it is
 /// encrypted at rest and never returned by the API. See <see cref="CreateRustServerDto"/> and
-/// <see cref="UpdateRustServerDto"/> for how it is written.
+/// <see cref="UpdateRustServerDto"/> for how it is written. Also excludes <c>AssignedWorkerId</c>/
+/// <c>LastHeartbeatUtc</c> - internal worker-ownership plumbing, not something the UI needs.
 /// </summary>
 public class RustServerDto : AuditableEntityDto
 {
@@ -17,6 +19,10 @@ public class RustServerDto : AuditableEntityDto
     public string Host { get; set; } = string.Empty;
     public int Port { get; set; }
     public string? Description { get; set; }
+    public bool IsEnabled { get; set; }
+    public RconConnectionStatus ConnectionStatus { get; set; }
+    public string? ConnectionStatusDetail { get; set; }
+    public DateTimeOffset? ConnectionStatusChangedAtUtc { get; set; }
 }
 
 /// <summary>
