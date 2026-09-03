@@ -13,7 +13,11 @@ public enum PlatformSettingValueType
 {
     Boolean,
     String,
-    Integer
+    Integer,
+
+    /// <summary>Value is either empty (unset) or a Plan's Id, as a Guid string - see the Api-side
+    /// entity enum's remarks.</summary>
+    PlanReference
 }
 
 /// <summary>
