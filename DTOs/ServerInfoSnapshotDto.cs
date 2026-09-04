@@ -19,5 +19,6 @@ public class ServerInfoSnapshotDto
     public int NetworkIn { get; set; }
     public int NetworkOut { get; set; }
     public int Memory { get; set; }
+    public decimal Framerate { get; set; }
     public DateTimeOffset CapturedAtUtc { get; set; }
 }
