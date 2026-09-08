@@ -12,13 +12,35 @@ namespace RustArchon.Shared.DTOs;
 /// </summary>
 /// <remarks>
 /// <see cref="PlanName"/>/<see cref="MaximumServers"/> are <c>null</c> when the tenant has no Plan
-/// assigned at all (shouldn't happen - see <c>TenantPlanBackfiller</c> - but <c>Create</c> fails open
+/// assigned at all (shouldn't happen - see <c>SubscriptionBackfiller</c> - but <c>Create</c> fails open
 /// in that case rather than blocking a legitimate request, and this mirrors that: no known limit
 /// means nothing to warn about).
 /// </remarks>
 public class ServerPlanLimitDto
 {
     public string? PlanName { get; set; }
+
+    /// <summary>
+    /// The plan's ceiling, or <c>null</c> when it has none.
+    /// </summary>
+    /// <remarks>
+    /// No longer what gates adding a server - <see cref="Quantity"/> is. This is now the cap on how much
+    /// capacity may be <em>bought</em>, and is here for wording ("upgrade to go past 5") rather than for
+    /// enforcement.
+    /// </remarks>
     public int? MaximumServers { get; set; }
+
     public int CurrentServerCount { get; set; }
+
+    /// <summary>
+    /// Server slots currently paid for - the actual limit. <c>null</c> when the tenant has no billing
+    /// period at all, which the API treats as "no known limit" and lets through.
+    /// </summary>
+    public int? Quantity { get; set; }
+
+    /// <summary>
+    /// Whether more slots can be bought, or whether the plan itself has to change. False on a flat tier,
+    /// where capacity comes with the plan and isn't sold separately.
+    /// </summary>
+    public bool CanBuyCapacity { get; set; }
 }
