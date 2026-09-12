@@ -91,6 +91,14 @@ public class OrganizationDetailDto
     /// <summary>The roles defined within this Organization, for assigning to its members.</summary>
     public List<OrganizationRoleDto> Roles { get; set; } = [];
 
+    /// <summary>
+    /// How many notes the caller can see on this Organization - for the Notes tab's badge, the same
+    /// way <see cref="Servers"/>.Count and <see cref="Invoices"/>.Count feed theirs. Not the full list:
+    /// <c>NoteList</c> only fetches when the tab is actually opened, and a private note excluded from
+    /// that fetch is excluded from this count too - see <c>OrganizationAdminService.GetAsync</c>.
+    /// </summary>
+    public int NoteCount { get; set; }
+
     /// <summary>A plan change the Organization has accepted that has not taken effect yet.</summary>
     public OrganizationPendingChangeDto? PendingChange { get; set; }
 }
@@ -270,6 +278,21 @@ public class PlatformUserDto
     public List<PlatformUserMembershipDto> Organizations { get; set; } = [];
 }
 
+/// <summary>Whether the caller themselves currently holds the platform-wide "Site Admin" role.</summary>
+/// <remarks>
+/// Reachability is the whole answer: <c>PlatformUsersController</c> is gated by the
+/// <c>ManageOrganizations</c> permission, which today only Site Admins hold, so a 200 here always
+/// carries <see cref="IsSiteAdmin"/> true and a refusal (403) means false - see
+/// <c>PlatformUsersController.GetMyStatus</c>. Self-scoped, unlike <see cref="PlatformUserDto"/>: a
+/// customer-facing page (e.g. the Organization's own Members screen) asks this about the person
+/// looking at it, to decide whether a link to the site-admin-only user page is worth offering, not to
+/// look anyone else up.
+/// </remarks>
+public class PlatformAdminStatusDto
+{
+    public bool IsSiteAdmin { get; set; }
+}
+
 /// <summary>One of a user's Organization memberships, as listed in the platform directory.</summary>
 public class PlatformUserMembershipDto
 {
@@ -288,9 +311,30 @@ public class SetOrganizationStatusRequestDto
     public string? Reason { get; set; }
 }
 
+/// <summary>
+/// Why an Organization's subscription is being cancelled - picks which email template
+/// <c>OrganizationLifecycleService.CancelAsync</c> sends, alongside the free-text
+/// <see cref="CancelOrganizationRequestDto.Reason"/> a site admin can add for detail.
+/// </summary>
+public enum CancellationReasonCategory
+{
+    CustomerRequest,
+    NonPayment,
+
+    /// <summary>Routes to <c>EmailTemplateRegistry.Codes.TosViolationNotice</c> instead of the ordinary
+    /// cancellation template - the account is being closed specifically because of a policy violation,
+    /// not left on ordinary terms.</summary>
+    TosViolation,
+
+    Other
+}
+
 /// <summary>Ending an Organization.</summary>
 public class CancelOrganizationRequestDto
 {
+    public CancellationReasonCategory Category { get; set; }
+
+    /// <summary>Optional extra detail included in the notice email, alongside <see cref="Category"/>.</summary>
     public string? Reason { get; set; }
 }
 
