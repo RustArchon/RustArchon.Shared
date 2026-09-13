@@ -14,7 +14,8 @@ public enum CommunicationStatus
     Sent,
     Bounced,
     Viewed,
-    Cancelled
+    Cancelled,
+    Suppressed
 }
 
 /// <summary>
@@ -43,6 +44,7 @@ public class CommunicationDetailDto : CommunicationSummaryDto
     public DateTimeOffset? BouncedOn { get; set; }
     public DateTimeOffset? ViewedOn { get; set; }
     public DateTimeOffset? CancelledOn { get; set; }
+    public DateTimeOffset? SuppressedOn { get; set; }
     public string? FailureReason { get; set; }
 
     /// <summary>Whether <c>CommunicationsController.Cancel</c> would currently accept a cancel for
