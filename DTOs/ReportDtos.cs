@@ -127,6 +127,36 @@ public class PaymentLedgerRowDto
 }
 
 /// <summary>
+/// One group of Organizations sharing something they normally wouldn't - the same physical server, or
+/// the same contact email - where at least one of them has redeemed a discount. A flag for a human to
+/// look at, never an automatic conclusion: a legitimate business reorganizing looks identical to someone
+/// re-registering to reuse a one-per-organization code, and only a person can tell the two apart. See
+/// <c>ReportingService.GetDiscountAbuseSignalsAsync</c>'s own remarks.
+/// </summary>
+public class DiscountAbuseSignalRowDto
+{
+    /// <summary>"Shared server" or "Shared contact email".</summary>
+    public string SignalType { get; set; } = string.Empty;
+
+    /// <summary>What's actually shared - a "host:port" pair, or the email address itself.</summary>
+    public string Detail { get; set; } = string.Empty;
+
+    public List<DiscountAbuseTenantDto> Tenants { get; set; } = [];
+}
+
+/// <summary>One Organization inside a <see cref="DiscountAbuseSignalRowDto"/> group.</summary>
+public class DiscountAbuseTenantDto
+{
+    public Guid TenantId { get; set; }
+    public string OrganizationName { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+
+    /// <summary>Discount codes this Organization has redeemed - empty if none, included so the group
+    /// reads as a whole rather than needing a second lookup.</summary>
+    public List<string> RedeemedDiscountCodes { get; set; } = [];
+}
+
+/// <summary>
 /// One jurisdiction currently blocking one or more tenants' invoices for lack of a Stripe tax
 /// registration - see <c>RustArchon.Api.Data.BlockedInvoiceIssuance</c>.
 /// </summary>
