@@ -87,6 +87,46 @@ public class ReportFilterOptionDto
 }
 
 /// <summary>
+/// One payment attempt - successful or failed - for the Payment Ledger report. The processor
+/// reconciliation and failed-charge-tracking report in one: every row carries the provider's own id so
+/// it can be cross-checked against Stripe's own dashboard/export, and a failed row carries why.
+/// </summary>
+public class PaymentLedgerRowDto
+{
+    public Guid PaymentId { get; set; }
+    public Guid TenantId { get; set; }
+    public string OrganizationName { get; set; } = string.Empty;
+    public string? ContactEmail { get; set; }
+
+    public PaymentStatus Status { get; set; }
+    public PaymentMethod Method { get; set; }
+
+    public decimal Amount { get; set; }
+    public string Currency { get; set; } = string.Empty;
+
+    /// <summary>When this attempt happened - a receipt date for a success, when the decline was recorded
+    /// for a failure.</summary>
+    public DateTimeOffset ReceivedOn { get; set; }
+
+    /// <summary>The payment provider's own id for the charge, when there is one - what an admin
+    /// cross-checks against Stripe's own dashboard.</summary>
+    public string? ProviderPaymentId { get; set; }
+
+    /// <summary>Set only for a manually-entered payment - a cheque number, a bank reference.</summary>
+    public string? Reference { get; set; }
+
+    /// <summary>Stripe's machine-readable decline reason, set only for a <see cref="PaymentStatus.Failed"/> row.</summary>
+    public string? FailureCode { get; set; }
+
+    /// <summary>Stripe's human-readable decline reason, set only for a <see cref="PaymentStatus.Failed"/> row.</summary>
+    public string? FailureMessage { get; set; }
+
+    /// <summary>Invoice number(s) this payment settled, comma-joined - empty for a failed attempt (nothing
+    /// was ever allocated) or a success still sitting unallocated.</summary>
+    public string InvoiceNumbers { get; set; } = string.Empty;
+}
+
+/// <summary>
 /// One jurisdiction currently blocking one or more tenants' invoices for lack of a Stripe tax
 /// registration - see <c>RustArchon.Api.Data.BlockedInvoiceIssuance</c>.
 /// </summary>
