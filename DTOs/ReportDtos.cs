@@ -86,6 +86,25 @@ public class ReportFilterOptionDto
     public string? Group { get; set; }
 }
 
+/// <summary>
+/// One jurisdiction currently blocking one or more tenants' invoices for lack of a Stripe tax
+/// registration - see <c>RustArchon.Api.Data.BlockedInvoiceIssuance</c>.
+/// </summary>
+public class BlockedInvoiceJurisdictionRowDto
+{
+    /// <summary>ISO 3166-1 alpha-2 country code.</summary>
+    public string Country { get; set; } = string.Empty;
+
+    /// <summary>State/province, when the jurisdiction has one.</summary>
+    public string? State { get; set; }
+
+    /// <summary>How many tenants currently have an invoice blocked in this jurisdiction.</summary>
+    public int OrganizationCount { get; set; }
+
+    /// <summary>The earliest <c>FirstBlockedOn</c> among them - how long this has been going on.</summary>
+    public DateTimeOffset OldestBlockedOn { get; set; }
+}
+
 /// <summary>One figure in a report's summary strip.</summary>
 public class ReportSummaryValueDto
 {
