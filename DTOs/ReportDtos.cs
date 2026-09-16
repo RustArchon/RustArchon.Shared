@@ -86,6 +86,95 @@ public class ReportFilterOptionDto
     public string? Group { get; set; }
 }
 
+/// <summary>
+/// One payment attempt - successful or failed - for the Payment Ledger report. The processor
+/// reconciliation and failed-charge-tracking report in one: every row carries the provider's own id so
+/// it can be cross-checked against Stripe's own dashboard/export, and a failed row carries why.
+/// </summary>
+public class PaymentLedgerRowDto
+{
+    public Guid PaymentId { get; set; }
+    public Guid TenantId { get; set; }
+    public string OrganizationName { get; set; } = string.Empty;
+    public string? ContactEmail { get; set; }
+
+    public PaymentStatus Status { get; set; }
+    public PaymentMethod Method { get; set; }
+
+    public decimal Amount { get; set; }
+    public string Currency { get; set; } = string.Empty;
+
+    /// <summary>When this attempt happened - a receipt date for a success, when the decline was recorded
+    /// for a failure.</summary>
+    public DateTimeOffset ReceivedOn { get; set; }
+
+    /// <summary>The payment provider's own id for the charge, when there is one - what an admin
+    /// cross-checks against Stripe's own dashboard.</summary>
+    public string? ProviderPaymentId { get; set; }
+
+    /// <summary>Set only for a manually-entered payment - a cheque number, a bank reference.</summary>
+    public string? Reference { get; set; }
+
+    /// <summary>Stripe's machine-readable decline reason, set only for a <see cref="PaymentStatus.Failed"/> row.</summary>
+    public string? FailureCode { get; set; }
+
+    /// <summary>Stripe's human-readable decline reason, set only for a <see cref="PaymentStatus.Failed"/> row.</summary>
+    public string? FailureMessage { get; set; }
+
+    /// <summary>Invoice number(s) this payment settled, comma-joined - empty for a failed attempt (nothing
+    /// was ever allocated) or a success still sitting unallocated.</summary>
+    public string InvoiceNumbers { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// One group of Organizations sharing something they normally wouldn't - the same physical server, or
+/// the same contact email - where at least one of them has redeemed a discount. A flag for a human to
+/// look at, never an automatic conclusion: a legitimate business reorganizing looks identical to someone
+/// re-registering to reuse a one-per-organization code, and only a person can tell the two apart. See
+/// <c>ReportingService.GetDiscountAbuseSignalsAsync</c>'s own remarks.
+/// </summary>
+public class DiscountAbuseSignalRowDto
+{
+    /// <summary>"Shared server" or "Shared contact email".</summary>
+    public string SignalType { get; set; } = string.Empty;
+
+    /// <summary>What's actually shared - a "host:port" pair, or the email address itself.</summary>
+    public string Detail { get; set; } = string.Empty;
+
+    public List<DiscountAbuseTenantDto> Tenants { get; set; } = [];
+}
+
+/// <summary>One Organization inside a <see cref="DiscountAbuseSignalRowDto"/> group.</summary>
+public class DiscountAbuseTenantDto
+{
+    public Guid TenantId { get; set; }
+    public string OrganizationName { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+
+    /// <summary>Discount codes this Organization has redeemed - empty if none, included so the group
+    /// reads as a whole rather than needing a second lookup.</summary>
+    public List<string> RedeemedDiscountCodes { get; set; } = [];
+}
+
+/// <summary>
+/// One jurisdiction currently blocking one or more tenants' invoices for lack of a Stripe tax
+/// registration - see <c>RustArchon.Api.Data.BlockedInvoiceIssuance</c>.
+/// </summary>
+public class BlockedInvoiceJurisdictionRowDto
+{
+    /// <summary>ISO 3166-1 alpha-2 country code.</summary>
+    public string Country { get; set; } = string.Empty;
+
+    /// <summary>State/province, when the jurisdiction has one.</summary>
+    public string? State { get; set; }
+
+    /// <summary>How many tenants currently have an invoice blocked in this jurisdiction.</summary>
+    public int OrganizationCount { get; set; }
+
+    /// <summary>The earliest <c>FirstBlockedOn</c> among them - how long this has been going on.</summary>
+    public DateTimeOffset OldestBlockedOn { get; set; }
+}
+
 /// <summary>One figure in a report's summary strip.</summary>
 public class ReportSummaryValueDto
 {

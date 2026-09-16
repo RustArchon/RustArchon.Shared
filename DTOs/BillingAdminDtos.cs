@@ -77,8 +77,21 @@ public class InvoiceSettlementDto
     /// <summary>A cheque number, bank reference, or the reason on a credit note.</summary>
     public string? Reference { get; set; }
 
-    /// <summary>Set when a refund or chargeback undid this - the balance went back up.</summary>
+    /// <summary>Set once this settlement has been reversed <em>in full</em> - still null while only
+    /// part of it has (see <see cref="ReversedAmount"/>).</summary>
     public DateTimeOffset? ReversedOn { get; set; }
+
+    /// <summary>How much of <see cref="Amount"/> has been given back so far, via one or more partial
+    /// refunds - zero if none has. Always for a payment; a credit note is never itself reversed.</summary>
+    public decimal ReversedAmount { get; set; }
+
+    /// <summary>Null for a credit note. For a payment, what it currently stands as - the field that
+    /// tells the admin screen when to offer the chargeback packet link.</summary>
+    public PaymentStatus? Status { get; set; }
+
+    /// <summary>Stripe's own dispute id, set only when <see cref="Status"/> is
+    /// <see cref="PaymentStatus.Disputed"/> - see <c>RustArchon.Api.Data.Payment.DisputeId</c>.</summary>
+    public string? DisputeId { get; set; }
 }
 
 /// <summary>

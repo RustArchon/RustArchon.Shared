@@ -145,6 +145,17 @@ public class SubscriptionDto
     public string PlanColorCode { get; set; } = string.Empty;
     public int TermMonths { get; set; }
 
+    /// <summary>
+    /// Where the subscription stands - see <see cref="SubscriptionStatus"/>. What
+    /// <c>SubscriptionStatusBanner</c> reads to decide whether to show a "you're past due"/"your
+    /// servers are suspended" notice.
+    /// </summary>
+    public SubscriptionStatus Status { get; set; }
+
+    /// <summary>Why <see cref="Status"/> last changed, in the words of whoever changed it - shown
+    /// alongside the banner above, when set.</summary>
+    public string? StatusReason { get; set; }
+
     /// <summary>When this tenant moved onto their current plan - however many billing periods ago. Not
     /// the same as <see cref="PeriodStart"/>, which is only the current period.</summary>
     public DateTimeOffset PlanSince { get; set; }
@@ -238,6 +249,12 @@ public class BillingHistoryEntryDto
 
     /// <summary>The invoice covering this period, or <c>null</c> if none was raised.</summary>
     public string? InvoiceNumber { get; set; }
+
+    /// <summary>
+    /// The invoice's own id, or <c>null</c> if none was raised - what a "Pay now" control needs to name
+    /// which invoice to check out, since <see cref="InvoiceNumber"/> alone isn't a usable key.
+    /// </summary>
+    public Guid? InvoiceId { get; set; }
 
     public DateTimeOffset? InvoicedOn { get; set; }
     public DateTimeOffset? DueOn { get; set; }
