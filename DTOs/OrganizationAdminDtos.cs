@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using RustArchon.Messaging.Contracts;
 
 namespace RustArchon.Shared.DTOs;
@@ -344,6 +345,30 @@ public class ReopenOrganizationRequestDto
     public Guid PlanId { get; set; }
 
     public int TermMonths { get; set; } = BillingTerms.Monthly;
+}
+
+/// <summary>
+/// Moving an already-active Organization onto a different plan immediately - see
+/// <c>OrganizationLifecycleService.ForcePlanChangeAsync</c> for exactly what this bypasses (the
+/// upgrade/downgrade timing rule, proration, invoicing) versus what still applies (the target plan must
+/// exist, be active, and be able to hold the Organization's current servers).
+/// </summary>
+public class AdminForcePlanChangeRequestDto
+{
+    [Required]
+    public Guid PlanId { get; set; }
+
+    [Range(1, 120)]
+    public int TermMonths { get; set; } = BillingTerms.Monthly;
+
+    /// <summary>Slots to hold, or null to derive them the same way a normal change would.</summary>
+    public int? Quantity { get; set; }
+
+    /// <summary>Required - this is an override of the normal billing rules, and the first thing anyone
+    /// asks afterwards is why it happened.</summary>
+    [Required]
+    [MaxLength(500)]
+    public string Reason { get; set; } = string.Empty;
 }
 
 /// <summary>Adding somebody to an Organization.</summary>
