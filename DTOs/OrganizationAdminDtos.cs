@@ -192,6 +192,13 @@ public class OrganizationIntervalDto
     public DateTimeOffset? EndDate { get; set; }
     public SubscriptionStatus Status { get; set; }
     public int PeriodCount { get; set; }
+
+    /// <summary>
+    /// Why a site admin force-moved the Organization onto this plan immediately, or null for every
+    /// other way this interval started (sign-up, the Organization's own self-service change, reopening).
+    /// See <c>Subscription.PlanChangeReason</c>.
+    /// </summary>
+    public string? PlanChangeReason { get; set; }
 }
 
 /// <summary>One billable span - see <c>SubscriptionPeriod</c>.</summary>
