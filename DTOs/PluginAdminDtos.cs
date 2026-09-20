@@ -1,6 +1,7 @@
 // Copyright ©2026 Scott Blomfield
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace RustArchon.Shared.DTOs;
@@ -44,6 +45,60 @@ public class RevokePluginKeyRequestDto
     [Required]
     [MaxLength(500)]
     public string Reason { get; set; } = string.Empty;
+}
+
+/// <summary>Asks for every signing key to be exported into a passphrase-protected file.</summary>
+public class ExportPluginKeysRequestDto
+{
+    /// <summary>Protects the file. 12 to 256 characters. Never stored or logged; whoever has the file and this can sign plugin code.</summary>
+    [Required]
+    [MaxLength(256)]
+    public string Passphrase { get; set; } = string.Empty;
+}
+
+/// <summary>Imports (or, with <see cref="DryRun"/>, previews importing) a bundle of signing keys.</summary>
+public class ImportPluginKeysRequestDto
+{
+    /// <summary>The bundle file's text, exactly as exported.</summary>
+    [Required]
+    [MaxLength(131072)]
+    public string Bundle { get; set; } = string.Empty;
+
+    [Required]
+    [MaxLength(256)]
+    public string Passphrase { get; set; } = string.Empty;
+
+    /// <summary>Also make the file's active key the active key here (the old active key is kept). Off by default: keys are added to the history only.</summary>
+    public bool ActivateBundleKey { get; set; }
+
+    /// <summary>Only report what would happen; change nothing.</summary>
+    public bool DryRun { get; set; }
+
+    [MaxLength(500)]
+    public string? Note { get; set; }
+}
+
+/// <summary>What importing does, or would do, to one key.</summary>
+public class PluginKeyImportItemDto
+{
+    public string Fingerprint { get; set; } = string.Empty;
+
+    /// <summary>Where the file says the key stands (<c>active</c>, <c>retired</c>, <c>revoked</c>), or empty for a key here that the file does not mention.</summary>
+    public string BundleState { get; set; } = string.Empty;
+
+    /// <summary><c>added</c>, <c>already_present</c>, <c>already_active</c>, <c>revoked</c>, <c>activated</c> or <c>previous_active_retired</c>.</summary>
+    public string Action { get; set; } = string.Empty;
+}
+
+/// <summary>The outcome of an import, or its plan.</summary>
+public class PluginKeyImportResultDto
+{
+    public bool DryRun { get; set; }
+    public List<PluginKeyImportItemDto> Items { get; set; } = new();
+    public string? ActiveBefore { get; set; }
+    public string? ActiveAfter { get; set; }
+    public bool ChangesActiveKey { get; set; }
+    public bool ChangesAnything { get; set; }
 }
 
 /// <summary>One uploaded plugin release.</summary>
