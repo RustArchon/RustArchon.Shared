@@ -42,6 +42,12 @@ public class RustServerDto : AuditableEntityDto
 
     /// <summary>Whether an admin may update the RustArchon plugin on this server from the Panel. Off by default.</summary>
     public bool PluginUpdatesEnabled { get; set; }
+
+    /// <summary>
+    /// Whether the Panel updates the plugin (and the Updater) on this server by itself when a newer version is being served. Off by
+    /// default, and only ever on while <see cref="PluginUpdatesEnabled"/> is.
+    /// </summary>
+    public bool PluginAutoUpdateEnabled { get; set; }
 }
 
 /// <summary>
@@ -152,6 +158,13 @@ public class UpdateServerPluginSettingsDto
     /// </summary>
     [Required]
     public bool? UpdatesEnabled { get; set; }
+
+    /// <summary>
+    /// Whether the Panel updates this server's plugin by itself. <b>Optional, unlike the three above</b>: a missing value means "leave it as it
+    /// is", so a client that does not know about this setting can neither turn it on nor off by accident. Turning
+    /// <see cref="UpdatesEnabled"/> off turns this off too, whatever is sent.
+    /// </summary>
+    public bool? AutoUpdateEnabled { get; set; }
 }
 
 /// <summary>
