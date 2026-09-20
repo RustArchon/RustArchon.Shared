@@ -25,6 +25,12 @@ public class BaseTcDto
     /// <summary>The SteamID64 of the player who placed it.</summary>
     public string OwnerId { get; set; } = string.Empty;
 
+    /// <summary>
+    /// The owner's name when the Api knows one: from the plugin (they are online, or authorized on their own cupboard) or, failing that, from the
+    /// player's most recent session on this server. Empty when neither has one; the Panel then shows the id.
+    /// </summary>
+    public string OwnerName { get; set; } = string.Empty;
+
     public List<BaseAuthorizedPlayerDto> Authorized { get; set; } = new();
 }
 
