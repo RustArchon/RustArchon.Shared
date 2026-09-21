@@ -33,6 +33,9 @@ public class RustServerDto : AuditableEntityDto
     /// never the key itself.</summary>
     public bool HasGeolocationApiKey { get; set; }
 
+    /// <summary>When the Add Server wizard was finished for this server; null while it has not been (the servers list then offers "Finish setup").</summary>
+    public DateTimeOffset? SetupCompletedAtUtc { get; set; }
+
     /// <summary>The saved (desired) state of the RustArchon plugin's Recording switch. Meaningful only on a
     /// server that has the plugin; see <see cref="ServerPluginStatusDto"/> for what the plugin reports.</summary>
     public bool PluginRecordingEnabled { get; set; }

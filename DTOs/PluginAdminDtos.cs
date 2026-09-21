@@ -26,6 +26,28 @@ public class PluginKeyDto
     public int ServersReporting { get; set; }
 
     public DateTimeOffset? LastReportedUtc { get; set; }
+
+    /// <summary>For the active key: when it became the active one. Null for every other key.</summary>
+    public DateTimeOffset? ActiveSinceUtc { get; set; }
+}
+
+/// <summary>Whether the active signing key is old enough that a site administrator is reminded to consider rotating it.</summary>
+public class PluginKeyReminderDto
+{
+    /// <summary>True when the reminder should be shown.</summary>
+    public bool Due { get; set; }
+
+    /// <summary>The active key; null when there is none yet.</summary>
+    public string? Fingerprint { get; set; }
+
+    /// <summary>When the active key became the active one; null when that cannot be told.</summary>
+    public DateTimeOffset? ActiveSinceUtc { get; set; }
+
+    /// <summary>Whole days the active key has been the active one.</summary>
+    public int? AgeDays { get; set; }
+
+    /// <summary>The Platform Setting the reminder follows: days before it shows. Zero means the reminder is off.</summary>
+    public int ReminderDays { get; set; }
 }
 
 public class RotatePluginKeyRequestDto
@@ -141,6 +163,15 @@ public class PluginServedDto
 
     /// <summary>Whether <see cref="ServedVersion"/> comes from an uploaded release rather than the embedded build.</summary>
     public bool FromRelease { get; set; }
+
+    /// <summary>When the served version began its staged roll-out to servers that update automatically; null until the automatic updater has first offered it.</summary>
+    public DateTimeOffset? RolloutStartedUtc { get; set; }
+
+    /// <summary>How many hours the roll-out takes (the Platform Setting now); zero means every server at once.</summary>
+    public int RolloutHours { get; set; }
+
+    /// <summary>How much of the fleet is eligible now, 0 to 100; null when the roll-out has not begun.</summary>
+    public int? RolloutPercent { get; set; }
 }
 
 public class PluginReleasesDto
@@ -162,7 +193,10 @@ public class PluginAdminEventDto
 {
     public DateTimeOffset AtUtc { get; set; }
 
-    /// <summary><c>KeyRotated</c>, <c>KeyRevoked</c>, <c>ReleaseUploaded</c>, <c>ReleasePublished</c> or <c>ReleaseWithdrawn</c>.</summary>
+    /// <summary>
+    /// <c>KeyRotated</c>, <c>KeyRevoked</c>, <c>KeysExported</c>, <c>KeysImported</c>, <c>KeyGenerated</c>, <c>ReleaseUploaded</c>, <c>ReleasePublished</c>,
+    /// <c>ReleaseWithdrawn</c>, <c>FileSigned</c> or <c>ReleaseSigned</c>.
+    /// </summary>
     public string Kind { get; set; } = string.Empty;
 
     public string Subject { get; set; } = string.Empty;
