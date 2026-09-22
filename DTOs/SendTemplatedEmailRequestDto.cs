@@ -32,10 +32,9 @@ public class SendTemplatedEmailRequestDto
     public Guid? UserId { get; set; }
 
     /// <summary>
-    /// The recipient's preferred culture (e.g. <c>"en-US"</c>), from
-    /// <c>RustArchon.Panel.Data.ApplicationUser.PreferredCulture</c> - passed through unvalidated to
-    /// <c>ICommunicationPublisher.QueueTemplatedAsync</c>, whose own fallback chain handles a null,
-    /// empty, or unrecognized value the same way as a recognized one with no translation saved yet.
+    /// The recipient's preferred culture (e.g. <c>"en-US"</c>), when the caller knows better than the Api does - passed through unvalidated to
+    /// <c>ICommunicationPublisher.QueueTemplatedAsync</c>, whose own fallback chain handles a null, empty, or unrecognized value the same way as a
+    /// recognized one with no translation saved yet. Left out (as the Panel does), the Api looks up the person's own language from <see cref="UserId"/>.
     /// </summary>
     public string? Culture { get; set; }
 }

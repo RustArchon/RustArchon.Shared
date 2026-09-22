@@ -70,6 +70,9 @@ public class PlanDto : AuditableEntityDto
 
     public bool HasRoles { get; set; }
 
+    /// <summary>Whether this plan offers applying updates to third-party plugins automatically (the plan gate on that feature).</summary>
+    public bool OffersThirdPartyPluginUpdates { get; set; }
+
     /// <summary>
     /// Whether one person may only have a single Organization of their own on this plan. Set on the
     /// free tier so an unlimited supply of Organizations isn't an unlimited supply of free servers.
@@ -81,6 +84,12 @@ public class PlanDto : AuditableEntityDto
 
     public int MaximumUsers { get; set; }
     public bool Active { get; set; }
+
+    /// <summary>
+    /// The newer version that replaced this plan, or null if none has. A plan that was replaced cannot be reactivated (its newer version is the one to
+    /// offer); one that was only deactivated can. The plan this one replaced, if any, is the row whose value here is this plan's <c>Id</c>.
+    /// </summary>
+    public Guid? SupersededByPlanId { get; set; }
 
     /// <summary>
     /// How many Organizations have <em>ever</em> been on this specific Plan row - not the Name, this
@@ -107,6 +116,9 @@ public class PlanDto : AuditableEntityDto
 /// </summary>
 public class CreatePlanDto : ICreateDto
 {
+    /// <summary>Whether this plan offers applying updates to third-party plugins automatically (the plan gate on that feature).</summary>
+    public bool OffersThirdPartyPluginUpdates { get; set; }
+
     [Required]
     [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
@@ -155,6 +167,9 @@ public class CreatePlanDto : ICreateDto
 /// </summary>
 public class UpdatePlanDto : IUpdateDto
 {
+    /// <summary>Whether this plan offers applying updates to third-party plugins automatically (the plan gate on that feature).</summary>
+    public bool OffersThirdPartyPluginUpdates { get; set; }
+
     public Guid Id { get; set; }
 
     [Required]
@@ -187,6 +202,15 @@ public class UpdatePlanDto : IUpdateDto
 }
 
 /// <summary>
+/// Request body for switching a Plan on or off, and nothing else. Whether a plan is offered to new sign-ups is not one of the terms a subscriber
+/// signed up under, so it can be changed on a plan that has subscribers without superseding it - which would only leave an identical copy behind.
+/// </summary>
+public class SetPlanActiveDto
+{
+    public bool Active { get; set; }
+}
+
+/// <summary>
 /// Request body for superseding a Plan that already has subscribers: creates a new Plan row (same
 /// Name as the one being superseded, these field values, <c>Active: true</c>), then deactivates the
 /// old one along with any other currently-active Plan with that Name. Existing Organizations stay
@@ -195,6 +219,9 @@ public class UpdatePlanDto : IUpdateDto
 /// </summary>
 public class SupersedePlanDto
 {
+    /// <summary>Whether this plan offers applying updates to third-party plugins automatically (the plan gate on that feature).</summary>
+    public bool OffersThirdPartyPluginUpdates { get; set; }
+
     [Required]
     [RegularExpression("^#[0-9A-Fa-f]{6}$", ErrorMessage = "Must be a 6-digit hex color, e.g. #b08553.")]
     public string ColorCode { get; set; } = "#888888";
@@ -239,6 +266,9 @@ public class PublicPlanDto
     public PricingModel PricingModel { get; set; }
     public int RetentionHistory { get; set; }
     public bool HasRoles { get; set; }
+
+    /// <summary>Whether this plan offers applying updates to third-party plugins automatically - the pricing page lists it as a feature when so.</summary>
+    public bool OffersThirdPartyPluginUpdates { get; set; }
 
     /// <summary>
     /// Whether one person may only have a single Organization of their own on this plan. Set on the

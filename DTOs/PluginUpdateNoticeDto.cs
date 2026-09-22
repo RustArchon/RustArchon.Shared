@@ -26,6 +26,13 @@ public class PluginUpdateNoticeDto
     /// </summary>
     public string Url { get; set; } = string.Empty;
 
+    /// <summary>
+    /// A direct download address for the newest version, or empty. Found by asking a public marketplace index, checked before it was kept
+    /// (https, on the marketplace's own host) and again before it is sent here; empty for paid and login-only plugins, and until it has been
+    /// looked up. Never fetched by the Panel - it is a link for a person to follow.
+    /// </summary>
+    public string DownloadUrl { get; set; } = string.Empty;
+
     public string Marketplace { get; set; } = string.Empty;
 
     public DateTimeOffset FirstSeenUtc { get; set; }
