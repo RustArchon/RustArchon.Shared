@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using JumpStart.Api.DTOs;
 
 namespace RustArchon.Shared.DTOs;
@@ -50,6 +51,13 @@ public class ServerReportDto : EntityDto
 {
     public Guid RustServerId { get; set; }
     public DateTimeOffset ReceivedAtUtc { get; set; }
+
+    /// <summary>
+    /// A flags value, so a report that arrived by both routes goes over the wire as <c>"Native, Plugin"</c>. The converter is named on
+    /// the property because that is the only place that beats the options-level one Refit installs, which reads a single name and
+    /// throws on a combination - which took the whole inbox down the first time a merged report existed.
+    /// </summary>
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public ServerReportSource Source { get; set; }
     public ServerReportType Type { get; set; }
     public ServerReportStatus Status { get; set; }
@@ -79,12 +87,40 @@ public class ServerReportDto : EntityDto
     public bool ParseFailed { get; set; }
 
     public DateTimeOffset? ReviewedAtUtc { get; set; }
+
+    /// <summary>The member of the organization this report is assigned to, or <c>null</c> when nobody has picked it up.</summary>
+    public Guid? AssignedToUserId { get; set; }
 }
 
 /// <summary>Body for changing a report's status.</summary>
 public class UpdateServerReportStatusDto
 {
     public ServerReportStatus Status { get; set; }
+}
+
+/// <summary>Body for assigning a report. <c>null</c> takes the assignment back.</summary>
+public class AssignServerReportDto
+{
+    public Guid? AssignedToUserId { get; set; }
+}
+
+/// <summary>An organization's internal note on a report. Never shown to the reporter - nothing in this system talks back to them.</summary>
+public class ServerReportNoteDto
+{
+    public Guid Id { get; set; }
+
+    /// <summary>The member who wrote it. The Api holds no names; the Panel resolves this from its own account store.</summary>
+    public Guid AuthorUserId { get; set; }
+
+    public string Content { get; set; } = string.Empty;
+
+    public DateTimeOffset CreatedOn { get; set; }
+}
+
+/// <summary>Body for adding a note to a report.</summary>
+public class SaveServerReportNoteDto
+{
+    public string Content { get; set; } = string.Empty;
 }
 
 /// <summary>How many reports are waiting, for the tab's badge.</summary>
