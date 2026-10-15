@@ -50,6 +50,13 @@ public class ThirdPartyPluginUpdateOfferDto
 
     /// <summary>Whether the saved instructions have produced a working update, so an automatic update may use them.</summary>
     public bool MappingTrusted { get; set; }
+
+    /// <summary>
+    /// When something other than the file is stopping an update right now, the code a start would be refused with (<c>not_signed_by_this_panel</c>,
+    /// <c>key_revoked</c>, <c>plugin_too_old</c>, <c>stale_status</c>, <c>no_handshake</c>, <c>server_disabled</c>, <c>in_progress</c>, <c>zip_unsupported</c>);
+    /// <see cref="Detail"/> carries the sentence. Empty when nothing is. A code for the Panel to link a remedy to, not text to show.
+    /// </summary>
+    public string BlockCode { get; set; } = string.Empty;
 }
 
 /// <summary>A request to apply a plugin's update now, by hand.</summary>

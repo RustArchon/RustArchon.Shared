@@ -179,6 +179,12 @@ public class PluginReleasesDto
     public PluginServedDto Main { get; set; } = new();
     public PluginServedDto Updater { get; set; } = new();
     public System.Collections.Generic.List<PluginReleaseDto> Releases { get; set; } = new();
+
+    /// <summary>When the automatic third-party plugin update pass last started; null if it has not run since the Api started.</summary>
+    public DateTimeOffset? ThirdPartyLastPassUtc { get; set; }
+
+    /// <summary>When that pass next runs; null if not yet scheduled.</summary>
+    public DateTimeOffset? ThirdPartyNextPassUtc { get; set; }
 }
 
 public class WithdrawPluginReleaseRequestDto
