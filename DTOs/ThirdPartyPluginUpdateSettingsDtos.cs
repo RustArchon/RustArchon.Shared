@@ -35,6 +35,25 @@ public class ThirdPartyPluginUpdateSettingsDto
     /// Panel to explain, not text to show.
     /// </summary>
     public string State { get; set; } = string.Empty;
+
+    /// <summary>The platform-wide switch for automatic third-party updates (a Platform Setting). When off, no server is updated automatically.</summary>
+    public bool PlatformSwitchOn { get; set; } = true;
+
+    /// <summary>
+    /// Whether the automatic pass would start an update on this server right now: <c>eligible</c>, or the first thing stopping it -
+    /// <c>platform_switch_off</c>, then the codes of <see cref="State"/>, then the plugin-side ones (<c>not_signed_by_this_panel</c>, <c>key_revoked</c>,
+    /// <c>plugin_too_old</c>, <c>stale_status</c>, <c>no_handshake</c>, <c>server_disabled</c>). A code for the Panel to link a remedy to.
+    /// </summary>
+    public string AutoState { get; set; } = "eligible";
+
+    /// <summary>A sentence saying what <see cref="AutoState"/> means and what to do about it. Empty when eligible.</summary>
+    public string AutoStateMessage { get; set; } = string.Empty;
+
+    /// <summary>When the automatic pass last started, or null if it has not run since the Api started.</summary>
+    public DateTimeOffset? LastPassUtc { get; set; }
+
+    /// <summary>When the automatic pass next runs, or null if not yet scheduled.</summary>
+    public DateTimeOffset? NextPassUtc { get; set; }
 }
 
 /// <summary>
